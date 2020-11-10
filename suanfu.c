@@ -6,7 +6,7 @@
 
 char stack[1010]="#\0";
 int top=0;
-char input[1010]='\0';
+char input[1010]="\0";
 int pointer=0;
 enum symbols{
     Plus,Mult,LPar,Rpar,I,Border,
