@@ -29,11 +29,16 @@ void pushIn();
 void analyse()
 {
     int length = strlen(input);
-    while(pointer<length){
+    while(pointer<length-1){
         pushIn();
     }
-    if(strcmp(stack,"#E")!=0 || strcmp(input, "#")!=0){
+    while (reduce() == 0){
+        printf("R\n");
+    }
+    
+    if(!(top == 1 && stack[top] == 'E') || pointer != length-1){
         printf("RE\n");
+        exit(0);
     }
 }
 
@@ -51,24 +56,22 @@ void pushIn(){
             printf("E\n");
             exit(0);
         }
-    } else if(inner == -1){
+    } else if(inner == -2){
         printf("E\n");
         exit(0);
     }
 
     int relation = priority[inner][outer];
+    //printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
 
     if(relation == -2){
+        //printf("%s\n",stack);
         printf("E\n");
         exit(0);
-    } else if(relation == -1){
+    } else if(relation == -1 || relation == 0){
         stack[++top]=input[pointer++];
         printf("I%c\n",stack[top]);
     } else {
-        if(relation == 0){
-            stack[++top]=input[pointer++];
-            printf("I%c\n",stack[top]);
-        }
         while(reduce() == 0)
             printf("R\n");
     }
@@ -80,15 +83,15 @@ int reduce(){
     if(stack[top]=='i'){
         stack[top]='F';
         return 0;
-    } else if(top>=2 && (stack[top-2] == '(' && stack[top-1] == 'E' && stack[top] == ')')){
+    } else if(top>=2 && (stack[top-2] == '(' && (stack[top-1] == 'E'  || stack[top-1] == 'T' || stack[top-1] == 'F') && stack[top] == ')')){
         top-=2;
         stack[top] = 'F';
         return 0;
-    } else if(top>=2 && (stack[top-2] == 'T' && stack[top-1] == '*' && stack[top] == 'F')){
+    } else if(top>=2 && ((stack[top-2] == 'T' || stack[top-2] == 'F') && stack[top-1] == '*' && stack[top] == 'F')){
         top-=2;
         stack[top] = 'T';
         return 0;
-    } else if(top>=2 && (stack[top-2] == 'E' && stack[top-1] == '+' && stack[top] == 'T')){
+    } else if(top>=2 && ((stack[top-2] == 'E' || stack[top-2] == 'T' || stack[top-2] == 'F') && stack[top-1] == '+' && (stack[top] == 'T' || stack[top] == 'F'))){
         top-=2;
         stack[top] = 'E';
         return 0;
@@ -110,6 +113,7 @@ int main(int argc, char **argv)
     int i=0;
     while(input[i]!='\r' && input[i]!='\n' && input[i]!='\0') i++;
     input[i]='#';input[i+1]='\0';
+    //printf("%s\n",input);
 
     analyse();
     
@@ -122,19 +126,29 @@ int find(char c){
     {
     case '+':
         symbol=Plus;
+        return symbol;
     case '*':
         symbol=Mult;
+        return symbol;
     case '(':
         symbol=LPar;
+        return symbol;
     case ')':
         symbol=Rpar;
+        return symbol;
     case 'i':
         symbol=I;
+        return symbol;
     case '#':
         symbol=Border;
         return symbol;
+
+    case 'E':
+    case 'F':
+    case 'T':
+        return -1;
     
     default:
-        return -1;
+        return -2;
     }
 }
