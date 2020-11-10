@@ -21,8 +21,10 @@ int priority[6][6]={
 };
 FILE *fp;
 
-int find();
+void analyse();
+int find(char);
 int reduce();
+void pushIn();
 
 void analyse()
 {
@@ -33,7 +35,6 @@ void analyse()
     if(strcmp(stack,"#E")!=0 || strcmp(input, "#")!=0){
         printf("RE\n");
     }
-    return 0;
 }
 
 void pushIn(){
