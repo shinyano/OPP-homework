@@ -30,10 +30,10 @@ void pushIn();
 void analyse()
 {
     length = strlen(input);
-    while(pointer<length){
+    while(pointer<length-1){
         pushIn();
     }
-    if (reduce() == 0){
+    while (reduce() == 0){
         printf("R\n");
     }
     
@@ -44,12 +44,6 @@ void analyse()
 }
 
 void pushIn(){
-    if( top == 1 && stack[top] == 'E' && pointer == length-1){
-        exit(0);
-    } else if(pointer == length-1 && reduce() != 0){
-        printf("RE\n");
-        exit(0);
-    }
     int inner = find(stack[top]);
     int outer = find(input[pointer]);
 
