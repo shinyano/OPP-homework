@@ -8,6 +8,7 @@ char stack[1010]="#\0";
 int top=0;
 char input[1010]="\0";
 int pointer=0;
+int length;
 enum symbols{
     Plus,Mult,LPar,Rpar,I,Border,
 } symbol;
@@ -28,11 +29,11 @@ void pushIn();
 
 void analyse()
 {
-    int length = strlen(input);
-    while(pointer<length-1){
+    length = strlen(input);
+    while(pointer<length){
         pushIn();
     }
-    while (reduce() == 0){
+    if (reduce() == 0){
         printf("R\n");
     }
     
@@ -43,6 +44,9 @@ void analyse()
 }
 
 void pushIn(){
+    if( top == 1 && stack[top] == 'E' && pointer == length-1){
+        exit(0);
+    }
     int inner = find(stack[top]);
     int outer = find(input[pointer]);
 
@@ -62,7 +66,7 @@ void pushIn(){
     }
 
     int relation = priority[inner][outer];
-    //printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
+    printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
 
     if(relation == -2){
         //printf("%s\n",stack);
@@ -72,7 +76,7 @@ void pushIn(){
         stack[++top]=input[pointer++];
         printf("I%c\n",stack[top]);
     } else {
-        while(reduce() == 0)
+        if(reduce() == 0)
             printf("R\n");
     }
 
