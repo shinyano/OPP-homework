@@ -66,7 +66,7 @@ void pushIn(){
     }
 
     int relation = priority[inner][outer];
-    printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
+    //printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
 
     if(relation == -2){
         //printf("%s\n",stack);
