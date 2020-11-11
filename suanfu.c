@@ -26,21 +26,22 @@ void analyse();
 int find(char);
 int reduce();
 void pushIn();
+void error();
+void success();
+void reduceError();
+void reduceSuccess();
 
 void analyse()
 {
     length = strlen(input);
-    while(pointer<length-1){
+    while(1){
         pushIn();
     }
-    while (reduce() == 0){
-        printf("R\n");
-    }
     
-    if(!(top == 1 && stack[top] == 'E') || pointer != length-1){
-        printf("RE\n");
-        exit(0);
-    }
+    // if(!(top == 1 && stack[top] == 'E') || pointer != length-1){
+    //     printf("RE\n");
+    //     exit(0);
+    // }
 }
 
 void pushIn(){
@@ -48,37 +49,39 @@ void pushIn(){
     int outer = find(input[pointer]);
 
     if(outer == -2){
-        printf("E\n");
-        exit(0);
+        error();
     }
     if(inner == -1 && top > 0){
         inner=find(stack[top-1]);
-        if(inner == -1){
-            printf("E\n");
-            exit(0);
+        if(inner < 0){
+            error();
         }
     } else if(inner == -2){
-        printf("E\n");
-        exit(0);
+        error();
+    }
+
+    if(inner == outer && outer == Border){
+        success();
     }
 
     int relation = priority[inner][outer];
-    //printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
+    // printf("%s\n",stack);
+    // printf("%d%c %d%c\n",top,stack[top],pointer,input[pointer]);
+    // printf("%d %d %d\n",inner,outer,Border);
 
     if(relation == -2){
         //printf("%s\n",stack);
-        printf("E\n");
-        exit(0);
+        error();
     } else if(relation == -1 || relation == 0){
         stack[++top]=input[pointer++];
         printf("I%c\n",stack[top]);
         if(relation == 0){
             if(reduce() == 0)
                 printf("R\n");
-            else{
-                printf("RE\n");
-                exit(0);
-            }
+            // else{
+            //     printf("RE\n");
+            //     exit(0);
+            // }
         }
     } else {
         if(reduce() == 0)
@@ -105,6 +108,7 @@ int reduce(){
         stack[top] = 'E';
         return 0;
     } else {
+        reduceError();
         return -1;
     }
 }
@@ -157,4 +161,22 @@ int find(char c){
     default:
         return -2;
     }
+}
+
+void error(){
+    printf("E\n");
+    exit(0);
+}
+
+void reduceSuccess(){
+    printf("R\n");
+}
+
+void reduceError(){
+    printf("RE\n");
+    exit(0);
+}
+
+void success(){
+    exit(0);
 }
