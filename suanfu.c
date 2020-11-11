@@ -50,7 +50,7 @@ void pushIn(){
     int inner = find(stack[top]);
     int outer = find(input[pointer]);
 
-    if(outer == -1){
+    if(outer == -2){
         printf("E\n");
         exit(0);
     }
@@ -75,6 +75,14 @@ void pushIn(){
     } else if(relation == -1 || relation == 0){
         stack[++top]=input[pointer++];
         printf("I%c\n",stack[top]);
+        if(relation == 0){
+            if(reduce() == 0)
+                printf("R\n");
+            else{
+                printf("RE\n");
+                exit(0);
+            }
+        }
     } else {
         if(reduce() == 0)
             printf("R\n");
@@ -85,17 +93,17 @@ void pushIn(){
 
 int reduce(){
     if(stack[top]=='i'){
-        stack[top]='F';
+        stack[top]='E';
         return 0;
-    } else if(top>=2 && (stack[top-2] == '(' && (stack[top-1] == 'E'  || stack[top-1] == 'T' || stack[top-1] == 'F') && stack[top] == ')')){
+    } else if(top>=2 && (stack[top-2] == '(' && stack[top-1] == 'E' && stack[top] == ')')){
         top-=2;
-        stack[top] = 'F';
+        stack[top] = 'E';
         return 0;
-    } else if(top>=2 && ((stack[top-2] == 'T' || stack[top-2] == 'F') && stack[top-1] == '*' && stack[top] == 'F')){
+    } else if(top>=2 && (stack[top-2] == 'E' && stack[top-1] == '*' && stack[top] == 'E')){
         top-=2;
-        stack[top] = 'T';
+        stack[top] = 'E';
         return 0;
-    } else if(top>=2 && ((stack[top-2] == 'E' || stack[top-2] == 'T' || stack[top-2] == 'F') && stack[top-1] == '+' && (stack[top] == 'T' || stack[top] == 'F'))){
+    } else if(top>=2 && (stack[top-2] == 'E' && stack[top-1] == '+' && stack[top] == 'E')){
         top-=2;
         stack[top] = 'E';
         return 0;
@@ -117,7 +125,6 @@ int main(int argc, char **argv)
     int i=0;
     while(input[i]!='\r' && input[i]!='\n' && input[i]!='\0') i++;
     input[i]='#';input[i+1]='\0';
-    //printf("%s\n",input);
 
     analyse();
     
@@ -148,8 +155,6 @@ int find(char c){
         return symbol;
 
     case 'E':
-    case 'F':
-    case 'T':
         return -1;
     
     default:
